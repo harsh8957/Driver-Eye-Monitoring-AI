@@ -1,5 +1,6 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_USE_LEGACY_KERAS"] = "1"  # Force TF to use Keras 2
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File
