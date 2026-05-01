@@ -1,6 +1,7 @@
 import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # Suppress TensorFlow warnings
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from PIL import Image
@@ -10,19 +11,25 @@ from tensorflow.nn import softmax
 import io
 import uvicorn
 
-app = FastAPI()
-
-# Load trained model
 model = None
 
-@app.on_event("startup")
-def load_model():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     global model
-    model = tf.keras.models.load_model("backend/model.h5", compile=False)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, "model.h5")
+    model = tf.keras.models.load_model(model_path, compile=False)
     print("Model loaded successfully")
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 class_names = ['Open Eye', 'Sleepy Eye']
 IMG_SIZE = (150, 150)
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 @app.post("/predict/")
 async def predict_image(file: UploadFile = File(...)):
