@@ -11,7 +11,7 @@ import io
 app = FastAPI()
 
 # Load trained model
-model = tf.keras.models.load_model("backend/model.h5")
+model = tf.keras.models.load_model("backend/model.h5", compile=False)
 class_names = ['Open Eye', 'Sleepy Eye']
 IMG_SIZE = (150, 150)
 
@@ -22,7 +22,7 @@ async def predict_image(file: UploadFile = File(...)):
     image = image.resize(IMG_SIZE)
     img_array = np.array(image) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
-
+    
     predictions = model.predict(img_array)
     probs = softmax(predictions).numpy()[0]
 
