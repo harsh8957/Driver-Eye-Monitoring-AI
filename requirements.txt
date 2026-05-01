@@ -4,8 +4,7 @@ tensorflow-cpu==2.12.0
 numpy==1.23.5
 pillow
 python-multipart
-
-# frontend + extra libs
 requests
 streamlit==1.32.0
 opencv-python-headless
+
