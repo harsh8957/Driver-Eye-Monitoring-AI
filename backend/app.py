@@ -11,7 +11,13 @@ import io
 app = FastAPI()
 
 # Load trained model
-model = tf.keras.models.load_model("backend/model.h5", compile=False)
+model = None
+
+@app.on_event("startup")
+def load_model():
+    global model
+    model = tf.keras.models.load_model("backend/model.h5", compile=False)
+    print("Model loaded successfully")
 class_names = ['Open Eye', 'Sleepy Eye']
 IMG_SIZE = (150, 150)
 
